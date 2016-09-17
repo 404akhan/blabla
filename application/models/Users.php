@@ -47,4 +47,54 @@ class Users extends CI_Model
             array('transaction_history' => $transactions_update)
         );
     }
+
+    public function add_merchant($user_id, $data)
+    {
+        $person = $this->get_by_id($user_id);
+
+        $merchants = json_decode( $person->available_merchants, true );
+        array_push($merchants, $data);
+        $merchants_update = json_encode( $merchants );
+
+        $this->update(
+            $user_id,
+            array('available_merchants' => $merchants_update)
+        );
+    }
+
+    public function validate($user_id, $merchant_id)
+    {
+        $result = $this->db->where('user_id', $user_id)->like('available_merchants', $merchant_id)
+            ->get('users')->result_array();
+
+        if(count($result) == 0)
+            return 0;
+        else
+            return 1;
+    }
+
+    public function get_products($user_id, $token)
+    {
+        $array = array();
+
+        $total = $this->db->count_all('products');
+
+        for($i = 1; $i <= $total; $i++)
+        {
+            if(mt_rand(0, 1) == 0)
+                array_push($array, $i);
+        }
+
+        $products = array();
+
+        foreach($array as $id)
+        {
+            $result = $this->db->where('id', $id)->get('products')->row_array();
+
+            $result['quantity'] = 1;
+            array_push($products, $result);
+        }
+
+        return $products;
+    }
 }

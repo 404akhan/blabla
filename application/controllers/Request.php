@@ -68,6 +68,48 @@ class Request extends REST_Controller
                 'date' => $date
             ));
         }
+        elseif($action == 'add_merchant')
+        {
+            $user_id = $this->post('user_id');
+
+            $merchant_name = $this->post('merchant_name');
+
+            $this->users->add_merchant($user_id, $merchant_name);
+        }
+        elseif($action == 'validate')
+        {
+            $user_id = $this->post('user_id');
+            $merchant_id = $this->post('merchant_id');
+
+            if($this->users->validate($user_id, $merchant_id))
+            {
+                $data = array();
+                $data['result_code'] = 200;
+                $data['result_description'] = 'merchant is allowed';
+
+                header('Content-Type: application/json');
+                echo json_encode($data);
+            }
+            else
+            {
+                $data = array();
+                $data['result_code'] = 403;
+                $data['result_description'] = 'merchant is not allowed';
+
+                header('Content-Type: application/json');
+                echo json_encode($data);
+            }
+        }
+        elseif($action == 'purchase')
+        {
+            $user_id = $this->post('user_id');
+            $token = $this->post('token');
+
+            $products = $this->users->get_products($user_id, $token);
+
+            header('Content-Type: application/json');
+            echo json_encode($products);
+        }
     }
 
     public function index_delete()
