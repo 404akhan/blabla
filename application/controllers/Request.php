@@ -15,12 +15,14 @@ class Request extends REST_Controller
             $user_id = $this->get('user_id');
             $result = $this->users->get_by_id($user_id);
 
+            header('Content-Type: application/json');
             echo json_encode($result);
         }
         elseif($action == 'all')
         {
             $result = $this->users->get_all();
 
+            header('Content-Type: application/json');
             echo json_encode($result);
         }
     }
